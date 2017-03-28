@@ -1,0 +1,116 @@
+<!doctype html>
+     <html>
+  <head>
+    <title>NexusUI Demo</title>
+    <script type="text/javascript" src="nexusUI.min.js"></script>
+    <script>
+
+      nx.onload = function() {
+
+
+        /* Event listening  options */
+
+        /*
+         This is the default anyway!
+        */
+        nx.sendsTo("js");
+
+        /* 
+        this code can be useful for logging any interface events
+        */
+        for (var key in nx.widgets) {
+          //nx.widgets[key].set({"value": 0.5});
+          with (nx.widgets[key]) {
+            on('*', function(data) {
+              // code that will be executed
+              console.log(canvasID, data)
+            })
+          }
+        } 
+        
+        /* styles */
+
+          nx.colorize("accent", "#347");
+          nx.colorize("border", "#e4e4e4");
+          nx.colorize("fill", "#eee");
+      }
+
+    </script>
+    <script>
+      var midi, data;
+      // request MIDI access
+      if (navigator.requestMIDIAccess) {
+          navigator.requestMIDIAccess({
+              sysex: false
+          }).then(onMIDISuccess, onMIDIFailure);
+      } else {
+          alert("No MIDI support in your browser.");
+      }
+
+      // midi functions
+      function onMIDISuccess(midiAccess) {
+          // when we get a succesful response, run this code
+          midi = midiAccess; // this is our raw MIDI data, inputs, outputs, and sysex status
+
+          var inputs = midi.inputs.values();
+          // loop over all available inputs and listen for any MIDI input
+          for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+              // each time there is a midi message call the onMIDIMessage function
+              input.value.onmidimessage = onMIDIMessage;
+          }
+      }
+
+      function onMIDIFailure(error) {
+          // when we get a failed response, run this code
+          console.log("No access to MIDI devices or your browser doesn't support WebMIDI API. Please use WebMIDIAPIShim " + error);
+      }
+
+      function onMIDIMessage(message) {
+          data = message.data; // this gives us our [command/channel, note, velocity] data.
+          console.log('MIDI:', data); // MIDI data [144, 63, 73]
+          var widget = nx.widgets["widget-" + data[1]];
+          if (widget) {
+            widget.set({"value": data[2] / 127});
+          }
+      }
+    </script>
+  </head>
+
+  <body>
+
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Reenie+Beanie');
+
+    html {
+      background-image: url(background-detailed.svg);
+      background-size: 20%;
+      background-opacity: 0.5;
+    }
+
+    body {
+      font-size: 1.5em;
+      font-family: 'Reenie Beanie', cursive;
+      color: #333;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;      
+    }
+
+    #widget-0 {
+      margin: 25px;
+    }
+    </style>
+
+    <h1>midi test</h1>
+
+    <canvas nx="toggle" id="widget-0"></canvas>
+    <canvas nx="dial" id="widget-1"></canvas>
+    <canvas nx="dial" id="widget-2"></canvas>
+    <canvas nx="dial" id="widget-3"></canvas>
+    <canvas nx="dial" id="widget-4"></canvas>
+    
+  </body>
+  
+</html>
