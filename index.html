@@ -6,8 +6,6 @@
     <script>
 
       nx.onload = function() {
-
-
         /* Event listening  options */
 
         /*
@@ -29,44 +27,68 @@
         } 
         
         /* styles */
+        nx.colorize("accent", "#347");
+        nx.colorize("border", "#a4a4a4");
+        nx.colorize("fill", "#aaa");
 
-          nx.colorize("accent", "#347");
-          nx.colorize("border", "#e4e4e4");
-          nx.colorize("fill", "#eee");
+        // request MIDI access
+        if (navigator.requestMIDIAccess) {
+            navigator.requestMIDIAccess({
+                sysex: false
+            }).then(onMIDISuccess, onMIDIFailure);
+        } else {
+            message("No MIDI support in your browser.");
+        }
       }
 
-    </script>
-    <script>
-      var midi, data;
-      // request MIDI access
-      if (navigator.requestMIDIAccess) {
-          navigator.requestMIDIAccess({
-              sysex: false
-          }).then(onMIDISuccess, onMIDIFailure);
-      } else {
-          alert("No MIDI support in your browser.");
-      }
+      var devices = {"gamelan-ctlout MIDI 1": {
+        "name": "The Gamelanenator"
+      }};
 
+      function message(msg) {
+          document.getElementById("messages").innerHTML = msg;
+      }
+      
       // midi functions
       function onMIDISuccess(midiAccess) {
+          console.log("MIDI success");
           // when we get a succesful response, run this code
-          midi = midiAccess; // this is our raw MIDI data, inputs, outputs, and sysex status
+          var midi = midiAccess; // this is our raw MIDI data, inputs, outputs, and sysex status
+          var found = [];
 
-          var inputs = midi.inputs.values();
-          // loop over all available inputs and listen for any MIDI input
-          for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
-              // each time there is a midi message call the onMIDIMessage function
-              input.value.onmidimessage = onMIDIMessage;
-          }
+          setInterval(function() {
+              // console.log("checking");
+              var inputs = midi.inputs.values();
+              // loop over all available inputs and listen for any MIDI input
+              for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+                  var name = input.value.name;
+                  var device = devices[input.value.name];
+                  //console.log(input);
+                  if (found.indexOf(name) == -1 && device) {
+                      console.log("Adding", input);
+                      message("");
+                      document.getElementById("controller").innerHTML = "<p class='device-name'>" + device.name + "</p>";
+                      found.push(input.value.name);
+                      //document.getElementById("controller").style.display = "block";
+                      nx.add("toggle", {"name": "widget-0", "parent": "controller"});
+                      nx.add("dial", {"name": "widget-1", "parent": "controller"});
+                      nx.add("dial", {"name": "widget-2", "parent": "controller"});
+                      nx.add("dial", {"name": "widget-3", "parent": "controller"});
+                      nx.add("dial", {"name": "widget-4", "parent": "controller"});
+                      // each time there is a midi message call the onMIDIMessage function
+                      input.value.onmidimessage = onMIDIMessage;
+                  }
+              }
+          }, 100);
       }
 
       function onMIDIFailure(error) {
           // when we get a failed response, run this code
-          console.log("No access to MIDI devices or your browser doesn't support WebMIDI API. Please use WebMIDIAPIShim " + error);
+          message("No access to MIDI devices or your browser doesn't support WebMIDI API. Please use WebMIDIAPIShim " + error);
       }
 
       function onMIDIMessage(message) {
-          data = message.data; // this gives us our [command/channel, note, velocity] data.
+          var data = message.data; // this gives us our [command/channel, note, velocity] data.
           console.log('MIDI:', data); // MIDI data [144, 63, 73]
           var widget = nx.widgets["widget-" + data[1]];
           if (widget) {
@@ -98,18 +120,33 @@
       text-align: center;      
     }
 
+    canvas {
+      margin: 10px;
+    }
+
+    #controller {
+      font-family: Arial;
+    }
+
     #widget-0 {
       margin: 25px;
     }
+    
+    #messages {
+      font-weight: bold;
+      font-size: 1.5em;
+      color: #555;
+    }
+
+    .device-name {
+      text-align: left;
+    }
     </style>
 
-    <h1>midi test</h1>
-
-    <canvas nx="toggle" id="widget-0"></canvas>
-    <canvas nx="dial" id="widget-1"></canvas>
-    <canvas nx="dial" id="widget-2"></canvas>
-    <canvas nx="dial" id="widget-3"></canvas>
-    <canvas nx="dial" id="widget-4"></canvas>
+    <h1>mnmmt</h1>
+    <p id="messages">plug it in!</p>
+    <div id="controller">
+    </div>
     
   </body>
   
