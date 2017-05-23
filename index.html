@@ -41,8 +41,13 @@
         }
       }
 
-      var devices = {"gamelan-ctlout MIDI 1": {
-        "name": "The Gamelanenator"
+      var devices = {
+      "gamelan-ctlout MIDI 1": {
+        "name": "The Gamelanenator",
+        "patch": ["toggle", "dial", "dial", "dial", "dial"],
+      }, "mark-one MIDI 1": {
+        "name": "The Mark One",
+        "patch": ["dial", "dial", "dial", "dial", "dial", "dial", "dial", "dial"],
       }};
 
       function message(msg) {
@@ -69,12 +74,10 @@
                       message("");
                       document.getElementById("controller").innerHTML = "<p class='device-name'>" + device.name + "</p>";
                       found.push(input.value.name);
-                      //document.getElementById("controller").style.display = "block";
-                      nx.add("toggle", {"name": "widget-0", "parent": "controller"});
-                      nx.add("dial", {"name": "widget-1", "parent": "controller"});
-                      nx.add("dial", {"name": "widget-2", "parent": "controller"});
-                      nx.add("dial", {"name": "widget-3", "parent": "controller"});
-                      nx.add("dial", {"name": "widget-4", "parent": "controller"});
+                      for (var w=0; w<device.patch.length; w++) {
+                        //document.getElementById("controller").style.display = "block";
+                        nx.add(device.patch[w], {"name": "widget-" + w, "parent": "controller"});
+                      }
                       // each time there is a midi message call the onMIDIMessage function
                       input.value.onmidimessage = onMIDIMessage;
                   }
@@ -89,7 +92,7 @@
 
       function onMIDIMessage(message) {
           var data = message.data; // this gives us our [command/channel, note, velocity] data.
-          console.log('MIDI:', data); // MIDI data [144, 63, 73]
+          //console.log('MIDI:', data); // MIDI data [144, 63, 73]
           var widget = nx.widgets["widget-" + data[1]];
           if (widget) {
             widget.set({"value": data[2] / 127});
