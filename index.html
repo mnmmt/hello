@@ -76,7 +76,9 @@
                       found.push(input.value.name);
                       for (var w=0; w<device.patch.length; w++) {
                         //document.getElementById("controller").style.display = "block";
-                        nx.add(device.patch[w], {"name": "widget-" + w, "parent": "controller"});
+                        var widget = nx.add(device.patch[w], {"name": "widget-" + w, "parent": "controller"});
+                        widget.max = 127;
+                        widget.min = 0;
                       }
                       // each time there is a midi message call the onMIDIMessage function
                       input.value.onmidimessage = onMIDIMessage;
@@ -95,7 +97,7 @@
           //console.log('MIDI:', data); // MIDI data [144, 63, 73]
           var widget = nx.widgets["widget-" + data[1]];
           if (widget) {
-            widget.set({"value": data[2] / 127});
+            widget.set({"value": data[2]});
           }
       }
     </script>
