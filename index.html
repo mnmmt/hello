@@ -75,6 +75,8 @@
           // when we get a succesful response, run this code
           var midi = midiAccess; // this is our raw MIDI data, inputs, outputs, and sysex status
           var found = [];
+          // access to our widget canvas
+          var el = document.getElementById("controller");
 
           setInterval(function() {
               // console.log("checking");
@@ -87,10 +89,10 @@
                   if (found.indexOf(name) == -1 && device) {
                       console.log("Adding", input);
                       message("");
-                      document.getElementById("controller").innerHTML = "<p class='device-name'>" + device.name + "</p>";
+                      el.className = device.name;
+                      el.innerHTML = "<p class='device-name'>" + device.name + "</p>";
                       found.push(input.value.name);
                       for (var w=0; w<device.patch.length; w++) {
-                        //document.getElementById("controller").style.display = "block";
                         if (device.patch[w]) {
                           var widget = nx.add(device.patch[w], {"name": "widget-" + w, "parent": "controller"});
                           widget.max = 127;
