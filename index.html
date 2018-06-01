@@ -45,10 +45,10 @@
         "gamelanator MIDI 1": {
           "name": "The Gamelanenator",
           "patch": ["toggle", "dial", "dial", "dial", "dial"],
-        }, "lozenge MIDI 1": {
+        }, "lozenge": {
           "name": "Lozenge",
           "patch": ["dial", "dial", "dial", "dial", "dial", "dial", "dial", "dial"],
-        }, "p2600 MIDI 1": {
+        }, "p2600": {
           "name": "2600 Paddle",
           "patch": ["dial", "toggle"],
         }
@@ -56,7 +56,7 @@
 
       function get_device(name) {
         for (var n in devices) {
-          if (n.indexOf(name) == 0) {
+          if (n.indexOf(name) == 0 || name.indexOf(n) == 0) {
             return devices[n];
           }
         }
