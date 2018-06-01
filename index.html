@@ -47,13 +47,13 @@
           "patch": ["toggle", "dial", "dial", "dial", "dial"],
         }, "lozenge": {
           "name": "Lozenge",
-          "patch": ["dial", "dial", "dial", "dial", "dial", "dial", "dial", "dial"],
+          "patch": ["dial", "dial", "dial", "dial\n", "dial", "dial", "dial", "dial"],
         }, "p2600": {
           "name": "2600 Paddle",
           "patch": ["dial", "toggle"],
         }, "phonon": {
           "name": "thumbelina",
-          "patch": ["dial", "toggle", "toggle", "dial", "toggle", "toggle", "dial", "toggle", "toggle", "dial", "toggle", "toggle", "toggle", "toggle"],
+          "patch": ["dial", "toggle", "toggle\n", "dial", "toggle", "toggle\n", "dial", "toggle", "toggle\n", "dial", "toggle", "toggle\n", "toggle", "toggle"],
         }
       };
 
@@ -93,10 +93,14 @@
                       el.innerHTML = "<p class='device-name'>" + device.name + "</p>";
                       found.push(input.value.name);
                       for (var w=0; w<device.patch.length; w++) {
-                        if (device.patch[w]) {
-                          var widget = nx.add(device.patch[w], {"name": "widget-" + w, "parent": "controller"});
+                        var kind = device.patch[w].replace("\n", "");
+                        if (kind) {
+                          var widget = nx.add(kind, {"name": "widget-" + w, "parent": "controller"});
                           widget.max = 127;
                           widget.min = 0;
+                        }
+                        if (device.patch[w].indexOf("\n") != -1) {
+                          el.insertAdjacentHTML('beforeend', '<div class="spacer"></div>');
                         }
                       }
                       // each time there is a midi message call the onMIDIMessage function
@@ -167,6 +171,10 @@
       font-size: 2em;
       font-family: "Dancing Script";
       text-align: left;
+    }
+
+    .spacer {
+      display: block;
     }
     </style>
 
