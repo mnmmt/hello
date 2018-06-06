@@ -5,7 +5,33 @@
     <script type="text/javascript" src="nexusUI.min.js"></script>
     <script>
 
+      // set up audio filter stuff
+      
+      function mtof(f){
+        if (f <= -1500) return(0);
+        else if (f > 1499) return(mtof(1499));
+        else return (8.17579891564 * Math.exp(.0577622650 * f));
+      }
+
+      var context = new AudioContext();
+      var filter = context.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(mtof(0), context.currentTime);
+      filter.Q.setValueAtTime(2, context.currentTime);
+      
+      filter.connect(context.destination);
+
+      var audiofns = {
+        "dial": [function(v) { filter.frequency.setValueAtTime(mtof(v), context.currentTime); }],
+      };
+
       nx.onload = function() {
+
+        // audio component
+        
+        var source = context.createMediaElementSource(document.getElementById('toodleoo'));
+        source.connect(filter);
+
         /* Event listening  options */
 
         /*
@@ -98,6 +124,11 @@
                           var widget = nx.add(kind, {"name": "widget-" + w, "parent": "controller"});
                           widget.max = 127;
                           widget.min = 0;
+                          if (audiofns[kind] && audiofns[kind].length) {
+                            var fn = audiofns[kind].shift();
+                            widget.onchange = fn;
+                            // widget.on("change", fn);
+                          }
                         }
                         if (device.patch[w].indexOf("\n") != -1) {
                           el.insertAdjacentHTML('beforeend', '<div class="spacer"></div>');
@@ -120,9 +151,12 @@
           //console.log('MIDI:', data); // MIDI data [144, 63, 73]
           var widget = nx.widgets["widget-" + data[1]];
           if (widget) {
-            widget.set({"value": data[2]});
+            var v = data[2];
+            widget.set({"value": v});
+            widget.onchange(v);
           }
       }
+
     </script>
   </head>
 
@@ -180,6 +214,9 @@
 
     <h1>mnmmt</h1>
     <p id="messages">plug it in!</p>
+    <div id="audio">
+      <audio id="toodleoo" preload="true" src="toodleoo.ogg" autoplay="true" loop="true"></audio>
+    </div>
     <div id="controller">
     </div>
     
