@@ -14,41 +14,42 @@
       }
 
       var context = new AudioContext();
-      var filter = context.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(mtof(0), context.currentTime);
-      filter.Q.setValueAtTime(2, context.currentTime);
-      
-      filter.connect(context.destination);
+
+      function make_filter() {
+        var filter = context.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(mtof(0), context.currentTime);
+        filter.Q.setValueAtTime(2, context.currentTime);
+        filter.connect(context.destination);
+        return filter;
+      }
+
+      var filters = [0, 1, 2].map(make_filter);
 
       var audiofns = {
-        "dial": [function(v) { filter.frequency.setValueAtTime(mtof(v), context.currentTime); }],
+        "dial": [0, 1, 2].map(function(i) { return function(v) { filters[i].frequency.setValueAtTime(mtof(v), context.currentTime); }}),
       };
 
       nx.onload = function() {
 
         // audio component
-        
-        var loop1 = new Audio("toodleoo-1.ogg");// document.getElementById('toodleoo-1');
-        var loop2 = new Audio("toodleoo-2.ogg");// document.getElementById('toodleoo-1');
-        var loop3 = new Audio("toodleoo-3.ogg");// document.getElementById('toodleoo-1');
-        //var loop2 = document.getElementById('toodleoo-1');
-        //var loop3 = document.getElementById('toodleoo-1');
+        var loops = [0, 1, 2].map(function(i) { return new Audio("toodleoo-" + (i + 1) + ".ogg"); });
 
-        loop1.addEventListener('ended', function() {
-          this.currentTime = loop2.currentTime = loop3.currentTime = 0;
-          this.play();
-          loop2.play();
-          loop3.play();
+        loops[0].addEventListener('ended', function() {
+          loops.map(function(l) {
+            l.currentTime = 0;
+            l.play();
+          });
         }, false);
-        loop1.play();
-        loop2.play();
-        loop3.play();
         
-        var source = context.createMediaElementSource(loop1);
-        source.connect(filter);
+        // connect loops to filters and start them
+        loops.map(function(l, i) {
+            var source = context.createMediaElementSource(l);
+            source.connect(filters[i]);
+            l.play();
+        });
 
-        /* Event listening  options */
+        /* Event listening options */
 
         /*
          This is the default anyway!
@@ -141,6 +142,7 @@
                           widget.max = 127;
                           widget.min = 0;
                           if (audiofns[kind] && audiofns[kind].length) {
+                            console.log(audiofns[kind]);
                             var fn = audiofns[kind].shift();
                             widget.onchange = fn;
                             widget.on("change", widget.onchange);
