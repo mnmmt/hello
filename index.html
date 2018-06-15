@@ -1,7 +1,63 @@
 <!doctype html>
      <html>
   <head>
-    <title>NexusUI Demo</title>
+    <title>bzzt.studio device tester</title>
+
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Reenie+Beanie');
+    @import url('https://fonts.googleapis.com/css?family=Dancing+Script');
+
+    html {
+      background-image: url(background-detailed.svg);
+      background-size: 20%;
+      background-opacity: 0.5;
+    }
+
+    body {
+      font-size: 1.5em;
+      font-family: 'Reenie Beanie', cursive;
+      color: #333;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;      
+    }
+
+    canvas {
+      margin: 10px;
+    }
+
+    #controller {
+      font-family: Arial;
+    }
+
+    canvas[nx=toggle] {
+      margin: 25px;
+    }
+    
+    #logo {
+      width: 90px;
+      margin-top: 1em;
+    }
+
+    #messages {
+      font-weight: bold;
+      font-size: 1.5em;
+      color: #555;
+    }
+
+    .device-name {
+      font-size: 2em;
+      font-family: "Dancing Script";
+      text-align: left;
+    }
+
+    .spacer {
+      display: block;
+    }
+    </style>
+
     <script type="text/javascript" src="nexusUI.min.js"></script>
     <script>
 
@@ -180,58 +236,7 @@
   </head>
 
   <body>
-
-    <style>
-    @import url('https://fonts.googleapis.com/css?family=Reenie+Beanie');
-    @import url('https://fonts.googleapis.com/css?family=Dancing+Script');
-
-    html {
-      background-image: url(background-detailed.svg);
-      background-size: 20%;
-      background-opacity: 0.5;
-    }
-
-    body {
-      font-size: 1.5em;
-      font-family: 'Reenie Beanie', cursive;
-      color: #333;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 600px;
-      width: 100%;
-      text-align: center;      
-    }
-
-    canvas {
-      margin: 10px;
-    }
-
-    #controller {
-      font-family: Arial;
-    }
-
-    canvas[nx=toggle] {
-      margin: 25px;
-    }
-    
-    #messages {
-      font-weight: bold;
-      font-size: 1.5em;
-      color: #555;
-    }
-
-    .device-name {
-      font-size: 2em;
-      font-family: "Dancing Script";
-      text-align: left;
-    }
-
-    .spacer {
-      display: block;
-    }
-    </style>
-
-    <h1>mnmmt</h1>
+    <img id="logo" src="http://bzzt.studio/img/bzzt-logo-wordmark.svg"/>
     <p id="messages">plug it in!</p>
     <div id="audio">
     </div>
