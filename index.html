@@ -142,7 +142,6 @@
                           widget.max = 127;
                           widget.min = 0;
                           if (audiofns[kind] && audiofns[kind].length) {
-                            console.log(audiofns[kind]);
                             var fn = audiofns[kind].shift();
                             widget.onchange = fn;
                             widget.on("change", widget.onchange);
