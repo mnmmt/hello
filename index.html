@@ -29,7 +29,23 @@
 
         // audio component
         
-        var source = context.createMediaElementSource(document.getElementById('toodleoo'));
+        var loop1 = new Audio("toodleoo-1.ogg");// document.getElementById('toodleoo-1');
+        var loop2 = new Audio("toodleoo-2.ogg");// document.getElementById('toodleoo-1');
+        var loop3 = new Audio("toodleoo-3.ogg");// document.getElementById('toodleoo-1');
+        //var loop2 = document.getElementById('toodleoo-1');
+        //var loop3 = document.getElementById('toodleoo-1');
+
+        loop1.addEventListener('ended', function() {
+          this.currentTime = loop2.currentTime = loop3.currentTime = 0;
+          this.play();
+          loop2.play();
+          loop3.play();
+        }, false);
+        loop1.play();
+        loop2.play();
+        loop3.play();
+        
+        var source = context.createMediaElementSource(loop1);
         source.connect(filter);
 
         /* Event listening  options */
@@ -113,7 +129,7 @@
                   var device = get_device(input.value.name);
                   //console.log(input);
                   if (found.indexOf(name) == -1 && device) {
-                      console.log("Adding", input);
+                      console.log("Adding MIDI device:", input);
                       message("");
                       el.className = device.name;
                       el.innerHTML = "<p class='device-name'>" + device.name + "</p>";
@@ -127,7 +143,7 @@
                           if (audiofns[kind] && audiofns[kind].length) {
                             var fn = audiofns[kind].shift();
                             widget.onchange = fn;
-                            // widget.on("change", fn);
+                            widget.on("change", widget.onchange);
                           }
                         }
                         if (device.patch[w].indexOf("\n") != -1) {
@@ -153,7 +169,9 @@
           if (widget) {
             var v = data[2];
             widget.set({"value": v});
-            widget.onchange(v);
+            if (widget.onchange) {
+              widget.onchange(v);
+            }
           }
       }
 
@@ -215,7 +233,6 @@
     <h1>mnmmt</h1>
     <p id="messages">plug it in!</p>
     <div id="audio">
-      <audio id="toodleoo" preload="true" src="toodleoo.ogg" autoplay="true" loop="true"></audio>
     </div>
     <div id="controller">
     </div>
