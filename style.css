@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css?family=Reenie+Beanie');
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script');
+
+html {
+  background-image: url(background-detailed.svg);
+  background-size: 20%;
+  background-opacity: 0.5;
+}
+
+body {
+  font-size: 1.5em;
+  font-family: 'Reenie Beanie', cursive;
+  color: #333;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;      
+}
+
+canvas {
+  margin: 10px;
+}
+
+#controller {
+  font-family: Arial;
+}
+
+canvas[nx=toggle] {
+  margin: 25px;
+}
+
+#logo {
+  width: 90px;
+  margin-top: 1em;
+}
+
+#messages {
+  font-weight: bold;
+  font-size: 1.5em;
+  color: #555;
+}
+
+.device-name {
+  font-size: 2em;
+  font-family: "Dancing Script";
+  text-align: center;
+  margin: 0px;
+  margin-bottom: 0.5em;
+}
+
+.spacer {
+  display: block;
+}
+
