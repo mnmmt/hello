@@ -53,3 +53,18 @@ canvas[nx=toggle] {
   display: block;
 }
 
+#audio {
+  display: none;
+}
+
+#controller {
+}
+
+button {
+  font-size: 2em;
+  border: 0px none;
+  background-color: transparent;
+  color: #CCA601;
+  padding: 0.25em;
+  border-radius: 2em;
+}

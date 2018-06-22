@@ -5,14 +5,16 @@
     <title>bzzt.studio - hello!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="theme.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script type="text/javascript" src="nexusUI.min.js"></script>
   </head>
 
   <body>
     <img id="logo" src="http://bzzt.studio/img/bzzt-logo-wordmark.svg"/>
     <p id="messages">plug it in!</p>
-    <div id="audio"></div>
+    <div id="audio">
+      <button onclick="start_audio()">▶</button>
+    </div>
     <div id="controller"></div>
     <script type="text/javascript" src="main.js"></script>
   </body>

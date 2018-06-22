@@ -1,10 +1,10 @@
-// set up audio filter stuff
-
 function mtof(f){
   if (f <= -1500) return(0);
   else if (f > 1499) return(mtof(1499));
   else return (8.17579891564 * Math.exp(.0577622650 * f));
 }
+
+// set up audio filter stuff
 
 var context = new AudioContext();
 
@@ -20,27 +20,37 @@ function make_filter() {
 var filters = [0, 1, 2].map(make_filter);
 
 var audiofns = {
-  "dial": [0, 1, 2].map(function(i) { return function(v) { filters[i].frequency.setValueAtTime(mtof(v), context.currentTime); }}),
+  "dial": [0, 1, 2].map(function(i) {
+    return function(v) {
+      filters[i].frequency.setValueAtTime(mtof(v), context.currentTime);
+    }
+  })
 };
 
-nx.onload = function() {
+// audio component
+var loops = [0, 1, 2].map(function(i) { return new Audio("toodleoo-" + (i + 1) + ".ogg"); });
 
-  // audio component
-  var loops = [0, 1, 2].map(function(i) { return new Audio("toodleoo-" + (i + 1) + ".ogg"); });
+loops[0].addEventListener('ended', function() {
+  loops.map(function(l) {
+    l.currentTime = 0;
+    l.play();
+  });
+}, false);
 
-  loops[0].addEventListener('ended', function() {
-    loops.map(function(l) {
-      l.currentTime = 0;
-      l.play();
-    });
-  }, false);
-  
+
+function start_audio() {
   // connect loops to filters and start them
   loops.map(function(l, i) {
       var source = context.createMediaElementSource(l);
       source.connect(filters[i]);
       l.play();
   });
+  
+  // enable controller view
+  document.getElementById("audio").style.visibility = "hidden";
+}
+
+nx.onload = function() {
 
   /* Event listening options */
 
@@ -146,6 +156,9 @@ function onMIDISuccess(midiAccess) {
                 }
                 // each time there is a midi message call the onMIDIMessage function
                 input.value.onmidimessage = onMIDIMessage;
+
+                // enable play button
+                document.getElementById("audio").style.display = "block";
             }
         }
     }, 100);
@@ -157,7 +170,8 @@ function onMIDIFailure(error) {
 }
 
 function onMIDIMessage(message) {
-    var data = message.data; // this gives us our [command/channel, note, velocity] data.
+  // this gives us our [command/channel, note, velocity] data.
+    var data = message.data;
     //console.log('MIDI:', data); // MIDI data [144, 63, 73]
     var widget = nx.widgets["widget-" + data[1]];
     if (widget) {
