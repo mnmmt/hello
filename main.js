@@ -37,17 +37,20 @@ loops[0].addEventListener('ended', function() {
   });
 }, false);
 
-
 function start_audio() {
-  // connect loops to filters and start them
-  loops.map(function(l, i) {
-      var source = context.createMediaElementSource(l);
-      source.connect(filters[i]);
-      l.play();
+  loops[0].play().catch(function() {
+    throw("Play did not trigger correctly. Won't hide play button.");
   });
-  
-  // enable controller view
+
+  // check if the loop audio started correctly
   if (!loops[0].paused) {
+    // connect loops to filters and start them
+    loops.map(function(l, i) {
+        var source = context.createMediaElementSource(l);
+        source.connect(filters[i]);
+        l.play();
+    });
+    
     document.getElementById("audio").style.display = "none";
     document.getElementById("controller").style.visibility = "visible";
   }
@@ -100,15 +103,18 @@ var devices = {
   }, "p2600": {
     "name": "2600 Paddle",
     "patch": ["dial", "toggle"],
-  }, "phonon": {
+  }, "thumbelina": {
     "name": "thumbelina",
     "patch": ["dial", "toggle", "toggle\n", "dial", "toggle", "toggle\n", "dial", "toggle", "toggle\n", "dial", "toggle", "toggle\n", "toggle", "toggle"],
   }
 };
 
+// alias
+devices["phonon"] = devices["thumbelina"];
+
 // how android sees the product name
 // does not scale to multiple devices
-devices["(product id = 0x0485)"] = devices["phonon"];
+devices["(product id = 0x0485)"] = devices["thumbelina"];
 
 function get_device(name) {
   for (var n in devices) {
@@ -167,7 +173,7 @@ function onMIDISuccess(midiAccess) {
 
                 // enable play button
                 document.getElementById("audio").style.display = "block";
-                
+
                 // hide UI
                 el.style.visibility = "hidden";
 
@@ -186,7 +192,7 @@ function onMIDIFailure(error) {
 function onMIDIMessage(message) {
   // this gives us our [command/channel, note, velocity] data.
     var data = message.data;
-    console.log('MIDI:', data); // MIDI data [144, 63, 73]
+    //console.log('MIDI:', data); // MIDI data [144, 63, 73]
     var widget = nx.widgets["widget-" + data[1]];
     if (widget) {
       var v = data[2];
