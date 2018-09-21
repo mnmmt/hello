@@ -47,7 +47,10 @@ function start_audio() {
   });
   
   // enable controller view
-  document.getElementById("audio").style.visibility = "hidden";
+  if (!loops[0].paused) {
+    document.getElementById("audio").style.display = "none";
+    document.getElementById("controller").style.visibility = "visible";
+  }
 }
 
 nx.onload = function() {
@@ -129,13 +132,14 @@ function onMIDISuccess(midiAccess) {
     var el = document.getElementById("controller");
 
     setInterval(function() {
-        // console.log("checking");
+        //console.log("checking");
         var inputs = midi.inputs.values();
         // loop over all available inputs and listen for any MIDI input
         for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
             var name = input.value.name;
             var device = get_device(input.value.name);
             //console.log(input);
+            //console.log(name, device);
             if (found.indexOf(name) == -1 && device) {
                 console.log("Adding MIDI device:", input);
                 message("");
@@ -163,6 +167,12 @@ function onMIDISuccess(midiAccess) {
 
                 // enable play button
                 document.getElementById("audio").style.display = "block";
+                
+                // hide UI
+                el.style.visibility = "hidden";
+
+                // try to start the audio only
+                start_audio();
             }
         }
     }, 100);
@@ -176,7 +186,7 @@ function onMIDIFailure(error) {
 function onMIDIMessage(message) {
   // this gives us our [command/channel, note, velocity] data.
     var data = message.data;
-    //console.log('MIDI:', data); // MIDI data [144, 63, 73]
+    console.log('MIDI:', data); // MIDI data [144, 63, 73]
     var widget = nx.widgets["widget-" + data[1]];
     if (widget) {
       var v = data[2];
