@@ -103,6 +103,10 @@ var devices = {
   }
 };
 
+// how android sees the product name
+// does not scale to multiple devices
+devices["(product id = 0x0485)"] = devices["phonon"];
+
 function get_device(name) {
   for (var n in devices) {
     if (n.indexOf(name) == 0 || name.indexOf(n) == 0) {
