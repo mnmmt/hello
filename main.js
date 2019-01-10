@@ -86,7 +86,7 @@ nx.onload = function() {
   // request MIDI access
   if (navigator.requestMIDIAccess) {
       navigator.requestMIDIAccess({
-          sysex: false
+          sysex: true
       }).then(onMIDISuccess, onMIDIFailure);
   } else {
       message("No MIDI support in your browser.");
@@ -191,7 +191,9 @@ function onMIDIFailure(error) {
 
 function onMIDIMessage(message) {
   // this gives us our [command/channel, note, velocity] data.
-    var data = message.data;
+  var data = message.data;
+  // control message
+  if (data[0] == 176) {
     //console.log('MIDI:', data); // MIDI data [144, 63, 73]
     var widget = nx.widgets["widget-" + data[1]];
     if (widget) {
@@ -201,4 +203,7 @@ function onMIDIMessage(message) {
         widget.onchange(v);
       }
     }
+  } else {
+    console.log(message);
+  }
 }
