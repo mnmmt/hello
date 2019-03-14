@@ -168,6 +168,7 @@ function onMIDISuccess(midiAccess) {
                     el.insertAdjacentHTML('beforeend', '<div class="spacer"></div>');
                   }
                 }
+
                 // each time there is a midi message call the onMIDIMessage function
                 input.value.onmidimessage = onMIDIMessage;
 
@@ -201,6 +202,18 @@ function onMIDIMessage(message) {
       widget.set({"value": v});
       if (widget.onchange) {
         widget.onchange(v);
+      }
+    }
+  } else if (data[0] == 242) { // song position pointer
+    if (!nx.widgets["clock"]) {
+      nx.add("matrix", {"name": "clock", "parent": "controller", "columns": 8, "rows": 1});
+    }
+    var clock = nx.widgets["clock"];
+    console.log("SPP", data, clock);
+    for (var i=0; i<4; i++) {
+      for (var j=0; j<4; j++) {
+        clock.matrix[i][j] = ((i + j * 4) == data[1] % 16) * 1;
+        clock.click();
       }
     }
   } else {
